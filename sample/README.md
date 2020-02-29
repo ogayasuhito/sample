@@ -32,7 +32,7 @@ Mysqlのデータベースが構築であることが前提です。
 ## インストール
  
 ```
-$ git clone https://github.com/ogayasuhito/ogayasu/sample
+$ git clone https://github.com/ogayasuhito/sample.git
 $ cd sample
 $ rake db:seed
 $ rails s
