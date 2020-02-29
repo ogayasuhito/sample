@@ -1,0 +1,114 @@
+
+
+
+
+  <script type="text/babel">
+
+
+      //タイトルのテキストボックス
+      var txtTitle = ReactDOM.render(<Txt name="txtTitle" id="txtTitleid" value="<%= @post.title %>" maxlength="20" size="22"   />   , document.getElementById('txtTitle'));
+      var txtCategory = ReactDOM.render(<Txt name="txtCategory" id="txtCategoryid" value="<%= @category %>" maxlength="20" size="22"   />, document.getElementById('txtCategory'));
+      var txtBody = ReactDOM.render(<TxtArea name="txtBody" id="txtBodyid" value="<%= @post.body %>"   />, document.getElementById('txtBody'));
+
+      //入力チェックとサブミット
+      function regist(){
+
+        var err = false;
+
+
+        //初期化
+        txtTitle.setState({ hdnvalue: "" });
+        txtCategory.setState({ hdnvalue: "" });
+        txtBody.setState({ hdnvalue: "" });
+
+
+        if (txtTitle.state.value==""){
+          
+          txtTitle.setState({
+            hdnvalue: "入力してください。"
+          });
+          err = true;
+        }
+
+        if (txtCategory.state.value==""){
+          
+          txtCategory.setState({
+            hdnvalue: "入力してください。"
+          });
+          err = true;
+        }
+
+
+        if (txtBody.state.value==""){
+          
+          txtBody.setState({
+            hdnvalue: "入力してください。"
+          });
+          err = true;
+        }
+
+        if(document.getElementById('imgdata').value.length > 0){
+         if (!document.getElementById('imgdata').value.toUpperCase().match(/\.(JPG|PNG|BMP)$/i) ) {
+            document.getElementById('hdnimgdata').innerText = "アップロードファイルは、jpg,png,bmpを指定してください。";
+            err = true;
+          }
+        }
+
+        if (err){
+          return false;
+        }
+
+        if (confirm('登録します。よろしいですか？')){
+          document.forms[0].submit();
+        }
+        
+
+      }
+
+  </script>
+
+<%= form_tag('/listRegistd', method: :post, multipart: true) do %>
+<div class="container">
+    <h1>
+      <%= @post.title %>
+    </h1>
+
+    <input type="hidden" name="id" id="id" value="<%= @post.id %>"  />
+
+    <div class="row"> 
+        <label>タイトル：</label> <div Id="txtTitle"></div>
+    </div>
+    <div class="row">
+        <label>カテゴリ：</label><div Id="txtCategory"></div>
+    </div>
+    <div class="row">
+        <label>本文：</label><div Id="txtBody"></div>
+    </div>
+
+    <div class="row">
+        <% if @post.img != nil %>
+            <img src="<%= "/img/#{@post.id.to_s + ".jpg"}" %>">
+        <% end %>
+    </div>
+
+    <div class="row">
+        <label>画像：</label><input type="file" id="imgdata" name="imgdata" >
+        <label id='hdnimgdata' class="errlabel"></label>
+    </div>
+
+    <div class="row">
+        <% if @post.created_at != nil %>
+            <label>登録日：<%= @post.created_at.strftime("%Y年 %m月 %d日 %H:%M:%S") %></label>
+            <% end %>
+    </div>
+    <div class="row">
+        <% if @post.updated_at != nil %>
+            <label>更新日：<%= @post.updated_at.strftime("%Y年 %m月 %d日 %H:%M:%S") %></label>
+            <% end %>
+    </div>
+
+    <button  type="button" class='btn btn-info' onclick="regist()">登録</button>
+
+    <%= link_to "戻る", '/list', class: 'btn btn-info' %>
+  </div>
+  <% end %>

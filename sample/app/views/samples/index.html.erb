@@ -1,0 +1,107 @@
+
+ <script type="text/javascript">
+
+
+  //ページ切り替え
+  function pagechange(page){
+      document.getElementById('currentpagesize').value = page;
+      document.forms[0].submit();
+
+      return false;
+  }
+
+    //サブミット
+  function categorychange(category){
+      document.getElementById('currentpagesize').value = "0";
+      document.getElementById('category').value = category;
+      document.forms[0].submit();
+
+      return false;
+  }
+
+    //サブミット
+  function initPage(){
+      document.getElementById('currentpagesize').value = "0";
+      document.getElementById('category').value = "";
+      document.forms[0].submit();
+
+      return false;
+  }
+ </script>
+<%= form_tag('/index', method: :get) do %>
+<div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <h1>
+          メイン
+        </h1>
+      </div>
+      <div class="col-lg-4">
+        <%= link_to "管理者", '/adminLogin', class: 'btn btn-info' %>
+      </div>
+    </div>
+
+
+<div class="row">
+    <div class="col-lg-8">
+        <% @posts.each do |post| %>
+
+        <%
+        bodyfirst = post.body.split(/\r\n|\r|\n/)[0];
+        %>
+            <div class="card" style="width: 40rem;">
+              <div class="card-body">
+                <h5 class="card-title"><%= post.title %></h5>
+                <h6 class="card-subtitle mb-2 text-muted">カテゴリ：<%= post.category %></h6>
+                <p class="card-text"><%= simple_format(bodyfirst) %></p>
+                <a href="#" class="card-link"><%= link_to "続きを見る", '/detail?id=' + post.id.to_s  %></a>
+              </div>
+            </div>
+        <% end %>
+
+        <input type="hidden" id="currentpagesize" name="currentpagesize" value="<%= @currentpagesize %>">
+        <input type="hidden" id="maxpagesize" name="maxpagesize" value="<%= @maxpagesize %>">
+        <input type="hidden" id="category" name="category" value="<%= @category %>">
+
+        <% if @currentpagesize > 0 %>
+        <%= link_to '最初', '/index', method: :get, onclick: 'return pagechange(0);' %>
+        <% end %>
+
+        <% for num in -2..2 do %>
+          <% if (@currentpagesize + num + 1) < @maxpagesize and (@currentpagesize + num + 1) > 0  %>
+            <% if num == 0  %>
+              <%= (@currentpagesize + num + 1).to_s %>
+            <% else %>
+              <%= link_to (@currentpagesize + num + 1).to_s, '/index', method: :get, onclick: 'return pagechange(' + (@currentpagesize + num).to_s + ');' %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if @currentpagesize + 1 < @maxpagesize %>
+        <%= link_to '最後', '/index', method: :get, onclick: 'return pagechange(' + (@maxpagesize - 1).to_s + ');' %>
+        <% end %>
+
+    </div>
+
+    <div class="col-lg-4">
+    
+
+        <% if @category == "" %>
+        <ul>
+          <% @categorysdic.each do |category| %>
+            <li> 
+            <%= link_to category.category + '(' + category.cnt.to_s + ')', '/index', method: :get, onclick: 'return categorychange("' + category.category + '");' %>
+            </li> 
+          <% end %>
+        </ul>
+        <% else %>
+        <%= link_to 'トップに戻る', '/index', method: :get, onclick: 'return initPage();' %>
+        <% end %>
+    </div>
+
+
+
+    
+    </div>
+</div>
+<% end %>

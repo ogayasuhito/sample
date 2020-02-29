@@ -1,0 +1,187 @@
+
+ <script type="text/babel">
+
+
+    //タイトルのテキストボックス
+    var txtCategory = ReactDOM.render(<Txt name="category" id="category" value="<%= @category %>" maxlength="20" size="22" />   , document.getElementById('category'));
+    var txtTitle = ReactDOM.render(<Txt name="title" id="title" value="<%= @title %>"  maxlength="20" size="22"    />, document.getElementById('title'));
+    var txtBody = ReactDOM.render(<Txt name="body" id="body" value="<%= @body %>"  maxlength="40" size="82"   />, document.getElementById('body'));
+
+
+
+    //入力チェックとサブミット
+    function find(){
+
+      var err = false;
+
+
+      //初期化
+      txtTitle.setState({ hdnvalue: "" });
+      txtCategory.setState({ hdnvalue: "" });
+      txtBody.setState({ hdnvalue: "" });
+
+
+      if (err){
+        return false;
+      }
+
+      document.getElementById('currentpagesize').value = "0";
+      document.getElementById('sortclm').value = "1";
+      document.getElementById('sort').value = "1";
+      document.forms[0].submit();
+
+      return false;
+
+      
+
+    }
+
+
+    function deleteCofirm(){
+      if(confirm('削除してよろしいですか？')){
+        return true;
+      } 
+
+      return false;
+    }
+
+      //ページ切り替え
+      function pagechange(page){
+          document.getElementById('currentpagesize').value = page;
+          document.forms[0].submit();
+
+          return false;
+      }
+
+
+      //入力値クリア
+      function clearField(){
+
+          document.getElementById('currentpagesize').value = "0";
+          document.getElementById('sortclm').value = "1";
+          document.getElementById('sort').value = "1";
+
+          txtTitle.setState({ value: "" });
+          txtCategory.setState({ value: "" });
+          txtBody.setState({ value: "" });
+
+
+          return false;
+      }
+
+
+
+      //ソート
+      function sort(sortclm){
+            document.getElementById('currentpagesize').value = "0";
+
+            if (document.getElementById('sort').value == "1" ){
+              document.getElementById('sort').value = "2"
+            } else{
+              document.getElementById('sort').value = "1"
+            
+            }
+
+            document.getElementById('sortclm').value = sortclm;
+
+            document.forms[0].submit();
+
+            return false;
+      }
+
+
+ </script>
+<%= form_tag('/list', method: :post) do %>
+
+<input type="hidden" id="currentpagesize" name="currentpagesize" value="<%= @currentpagesize %>">
+<input type="hidden" id="maxpagesize" name="maxpagesize" value="<%= @maxpagesize %>">
+<input type="hidden" id="sortclm" name="sortclm" value="<%= @sortclm %>">
+<input type="hidden" id="sort" name="sort" value="<%= @sort %>">
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8">
+      <h1>
+        記事一覧
+      </h1>
+    </div>
+    <div class="col-lg-4">
+      <%= link_to "パスワード変更", '/pwdChange', class: 'btn btn-info' %>
+      <%= link_to "トップに戻る", '/index', class: 'btn btn-info' %>
+    </div>
+  </div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="row">
+      <LABEL>タイトル：</LABEL><div Id="title"></div>
+      &nbsp;
+      <LABEL>カテゴリ：</LABEL><div Id="category"></div>
+    </div>
+  </div>
+
+ 
+  <div class="card-body">
+    <div class="row"><LABEL>本文　　：</LABEL><div Id="body"></div></div>
+  </div>			
+  ※スペース区切りで条件を複数指定できます。
+</div>
+
+  <button  type="button" class='btn btn-info' onclick="find()">検索</button>
+
+  <%= link_to "新規登録", '/listRegist', class: 'btn btn-info' %>
+
+  <button  type="button" class='btn btn-info' onclick="clearField()">クリア</button>
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">No</th>
+      <th scope="col">タイトル</th>
+      <th scope="col">カテゴリ</th>
+      <th scope="col"><%= link_to "登録日", '/list', method: :get, onclick: 'return sort(1);' %></th>      
+      <th scope="col"><%= link_to "更新日", '/list', method: :get, onclick: 'return sort(2);' %></th>      
+      <th scope="col">編集</th>
+      <th scope="col">削除</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @posts.each_with_index do |post, i| %>
+    <tr>
+      <th scope="row"><%= @startRowIdx + i + 1 %></th>
+      <th scope="row"><%= post.title %></th>
+      <th ><%= post.category %></th>
+      <th ><%= post.created_at.strftime("%Y年 %m月 %d日 %H:%M:%S") %></th>      
+      <th ><%= post.updated_at.strftime("%Y年 %m月 %d日 %H:%M:%S") %></th>
+      <th ><%= link_to "編集", '/listRegist?id=' + post.id.to_s %></th>
+      <th ><%= link_to '削除', '/listDelete?id=' + post.id.to_s, method: :get, onclick: 'return deleteCofirm();' %></th>      
+    </tr>
+   <% end %>
+  </tbody>
+</table>
+
+   <% if @currentpagesize > 0 %>
+  <%= link_to '最初', '/list', method: :get, onclick: 'return pagechange(0);' %>
+  <% end %>
+
+  <% for num in -2..2 do %>
+    <% if (@currentpagesize + num + 1) < @maxpagesize and (@currentpagesize + num + 1) > 0  %>
+      <% if num == 0  %>
+        <%= (@currentpagesize + num + 1).to_s %>
+      <% else %>
+        <%= link_to (@currentpagesize + num + 1).to_s, '/list', method: :get, onclick: 'return pagechange(' + (@currentpagesize + num).to_s + ');' %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+
+
+  <% if @currentpagesize + 1 < @maxpagesize %>
+  <%= link_to '最後', '/list', method: :get, onclick: 'return pagechange(' + (@maxpagesize - 1).to_s + ');' %>
+  <% end %>
+  <br/>
+
+</div>
+<% end %>

@@ -1,0 +1,52 @@
+<script type="text/babel">
+
+
+    //タイトルのテキストボックス
+    var txtPwd = ReactDOM.render(<Pwd name="password" id="password" value="" maxlength="20" size="22" />   , document.getElementById('password'));
+ 
+    //入力チェックとサブミット
+    function login(){
+
+      var err = false;
+
+      //初期化
+      txtPwd.setState({ hdnvalue: "" });
+      let nowpwd = document.getElementById("nowpwd").value;
+
+      if (txtPwd.state.value != nowpwd){
+
+        txtPwd.setState({
+          hdnvalue: "パスワードに誤りがあります。"
+        });
+        err = true;
+      }
+
+      if (err){
+        return false;
+      }
+
+      document.forms[0].submit();
+
+      return false;
+
+    }
+
+ </script>
+<%= form_tag('/list', method: :post) do %>
+<div class="container">
+<h2>
+  管理者ログイン
+</h2>
+
+<input type="hidden" id="nowpwd" value="<%= @password %>"> 
+
+  <div class="row">
+    パスワード:<div id="password"></div>
+  </div>
+
+  <div class="row">
+    <button  type="button" class='btn btn-info' onclick="login()">ログイン</button>
+  </div>
+
+</div>
+<% end %>

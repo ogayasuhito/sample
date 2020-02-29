@@ -1,0 +1,83 @@
+
+<script type="text/babel">
+
+
+    //タイトルのテキストボックス
+    var txtPwd = ReactDOM.render(<Pwd name="password" id="password" value="" maxlength="20" size="22" />   , document.getElementById('password'));
+    var txtPwd2 = ReactDOM.render(<Pwd name="passwordnew1" id="passwordnew1" value="" maxlength="20" size="22" />   , document.getElementById('passwordnew1'));
+    var txtPwd3 = ReactDOM.render(<Pwd name="passwordnew2" id="passwordnew2" value="" maxlength="20" size="22" />   , document.getElementById('passwordnew2'));
+ 
+    //入力チェックとサブミット
+    function regist(){
+
+      var err = false;
+
+      //初期化
+      txtPwd.setState({ hdnvalue: "" });
+      txtPwd2.setState({ hdnvalue: "" });
+      txtPwd3.setState({ hdnvalue: "" });
+
+      let nowpwd = document.getElementById("nowpwd").value;
+
+      if (txtPwd.state.value != nowpwd){
+
+        txtPwd.setState({
+          hdnvalue: "パスワードに誤りがあります。"
+        });
+        err = true;
+      }
+
+      if (txtPwd2.state.value != txtPwd3.state.value){
+
+        txtPwd2.setState({
+          hdnvalue: "パスワードが不一致です。"
+        });
+        txtPwd3.setState({
+          hdnvalue: "パスワードが不一致です。"
+        });
+        err = true;
+      }
+
+
+      if (err){
+        return false;
+      }
+
+      document.forms[0].submit();
+
+      return false;
+
+    }
+</script>
+
+<%= form_tag('/pwdChangeRegist', method: :post) do %>
+<div class="container">
+<h2>
+  管理者パスワード変更
+</h2>
+
+<input type="hidden" id="nowpwd" value="<%= @password %>"> 
+
+<div class="row">
+現在のパスワード　　　　　:　<div id="password"></div>
+</div>
+
+<div class="row">
+新しいパスワード　　　　　:　<div id="passwordnew1"></div>
+</div>
+
+<div class="row">
+新しいパスワード（確認用）:　<div id="passwordnew2"></div>
+</div>
+
+
+<div class="row">
+  <div class="col-lg-12">
+    <button type="button" class="btn btn-success" onclick="regist()">変更</button>
+    <%= link_to "戻る", '/list', class: 'btn btn-info' %>
+  </div>
+</div>
+
+
+</div>
+<% end %>

@@ -1,0 +1,72 @@
+<script type="text/babel">
+    (() => { //一行の生成 //クリックイベント //CounterコンポーベントのCounterと連動 function CounterAAA(props) { //文字の表示 return (
+    <li style={{ backgroundColor: props.counterProp.color }} onClick={()=> props.countUps(props.counterProp)}> {props.counterProp.id}:{props.counterProp.count}
+    </li>
+    ); } //counters要素分、生成 function CounterList(props) { //変数にセット const counters = props.counters.map(counter => { return ( //ここでコンポーネントを生成
+    < CounterAAA counterProp={ counter } key={ counter.id } countUps={ props.countUp } /> ); }); //変数を表示 return (
+    <ul>
+        {counters}
+    </ul>
+    ); } //メインのコンポーネント（テンプレート） class App extends React.Component { //コンストラクタ constructor() { super(); //初期パラメータ（上記のmapで使ってる要素） //内部変数の定義でもある this.state = { counters: [ { id: 'A', count: 0, color: 'tomato' }, { id: 'B', count: 0, color: 'skyblue' }, { id:
+    'C', count: 0, color: 'limegreen' } ], total: 0 }; //イベントのバインド this.countUps = this.countUps.bind(this); } //カウントアップ処理(Appタグ全体を再生成) countUps(counter) { this.setState(prevState => { const counters = prevState.counters.map(counter => { return { id:
+    counter.id, count: counter.count, color: counter.color }; }); //idを取得 const pos = counters.map(counter => { return counter.id; }).indexOf(counter.id); //IDをキーにセット(counters変数を書き換えている) counters[pos].count++; return { counters: counters, total: prevState.total
+    + 1 }; }); } render() { return (
+    <div className="container">
+        <CounterList counters={this.state.counters} countUp={this.countUps} />
+        <div>TOTAL INVENTORY: {this.state.total}</div>
+    </div>
+    ); } } ReactDOM.render(
+    <App />, document.getElementById('root')); }) ();
+</script>
+
+<div id="root"></div>
+<script type="text/babel">
+    (() => { //メインのコンポーネント（テンプレート） class Main extends React.Component { //コンストラクタ constructor() { super(); } render() { return (
+    <div className="main">
+        a
+    </div>
+    ); } } ReactDOM.render(
+    <Main />, document.getElementById('main')); }) ();
+</script>
+
+
+
+<div class="container">
+    <h1>
+        <%= @post.title %>
+    </h1>
+
+
+    <div id="main"></div>
+    <div class="row">
+        <label>タイトル：</label><input type="text" value="<%= @post.title %>">
+    </div>
+    <div class="row">
+        <label>カテゴリ：</label><input type="text" value="カテゴリ">
+    </div>
+    <div class="row">
+        <label>本文：</label><input type="text" value="<%= @post.title %>">
+    </div>
+
+    <div class="row">
+        <% if @post.img != nil %>
+            <%= image_tag @post.id.to_s + ".jpg" %>
+                <% end %>
+    </div>
+    <div class="row">
+        <label>画像：</label><input type="file">
+    </div>
+
+    <div class="row">
+        <% if @post.created_at != nil %>
+            <label>登録日：<%= @post.created_at.strftime("%Y年 %m月 %d日 %H:%M:%S") %></label>
+            <% end %>
+    </div>
+    <div class="row">
+        <% if @post.updated_at != nil %>
+            <label>更新日：<%= @post.updated_at.strftime("%Y年 %m月 %d日 %H:%M:%S") %></label>
+            <% end %>
+    </div>
+    <%= link_to "登録", '/list', class: 'btn btn-info' %>
+
+        <%= link_to "戻る", '/list', class: 'btn btn-info' %>
